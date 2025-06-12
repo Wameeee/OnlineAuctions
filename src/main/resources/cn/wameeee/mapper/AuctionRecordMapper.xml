@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wameeee.mapper.AuctionRecordMapper">
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="cn.wameeee.entity.AuctionRecord">
+        <id column="id" property="id"/>
+        <result column="userId" property="userId"/>
+        <result column="auctionId" property="auctionId"/>
+        <result column="auctionTime" property="auctionTime"/>
+        <result column="auctionPrice" property="auctionPrice"/>
+    </resultMap>
+
+    <!-- 包含关联对象的结果映射 -->
+    <resultMap id="ResultMapWithAssociation" type="cn.wameeee.entity.AuctionRecord" extends="BaseResultMap">
+        <association property="auctionUser" javaType="cn.wameeee.entity.AuctionUser">
+            <id column="user_userId" property="userId"/>
+            <result column="user_userName" property="userName"/>
+            <result column="user_userPassword" property="userPassword"/>
+            <result column="user_userCardNo" property="userCardNo"/>
+            <result column="user_userTel" property="userTel"/>
+            <result column="user_userAddress" property="userAddress"/>
+            <result column="user_userPostNumber" property="userPostNumber"/>
+            <result column="user_userIsAdmin" property="userIsAdmin"/>
+            <result column="user_userQuestion" property="userQuestion"/>
+            <result column="user_userAnswer" property="userAnswer"/>
+        </association>
+        <association property="auction" javaType="cn.wameeee.entity.Auction">
+            <id column="auction_auctionId" property="auctionId"/>
+            <result column="auction_auctionName" property="auctionName"/>
+            <result column="auction_auctionStartPrice" property="auctionStartPrice"/>
+            <result column="auction_auctionUpset" property="auctionUpset"/>
+            <result column="auction_auctionStartTime" property="auctionStartTime"/>
+            <result column="auction_auctionEndTime" property="auctionEndTime"/>
+            <result column="auction_auctionPic" property="auctionPic"/>
+            <result column="auction_auctionPicType" property="auctionPicType"/>
+            <result column="auction_auctionDesc" property="auctionDesc"/>
+        </association>
+    </resultMap>
+
+    <!-- 公共列 -->
+    <sql id="Base_Column_List">
+        id, userId, auctionId, auctionTime, auctionPrice
+    </sql>
+
+    <!-- 关联查询的公共列 -->
+    <sql id="Base_Column_List_With_Association">
+        ar.id, ar.userId, ar.auctionId, ar.auctionTime, ar.auctionPrice,
+        u.userId as user_userId, u.userName as user_userName, u.userPassword as user_userPassword,
+        u.userCardNo as user_userCardNo, u.userTel as user_userTel, u.userAddress as user_userAddress,
+        u.userPostNumber as user_userPostNumber, u.userIsAdmin as user_userIsAdmin,
+        u.userQuestion as user_userQuestion, u.userAnswer as user_userAnswer,
+        a.auctionId as auction_auctionId, a.auctionName as auction_auctionName,
+        a.auctionStartPrice as auction_auctionStartPrice, a.auctionUpset as auction_auctionUpset,
+        a.auctionStartTime as auction_auctionStartTime, a.auctionEndTime as auction_auctionEndTime,
+        a.auctionPic as auction_auctionPic, a.auctionPicType as auction_auctionPicType,
+        a.auctionDesc as auction_auctionDesc
+    </sql>
+
+    <!-- 根据ID查询竞拍记录 -->
+    <select id="selectById" resultMap="ResultMapWithAssociation" parameterType="java.lang.Long">
+        SELECT
+        <include refid="Base_Column_List_With_Association"/>
+        FROM auctionRecord ar
+        LEFT JOIN auctionUser u ON ar.userId = u.userId
+        LEFT JOIN auction a ON ar.auctionId = a.auctionId
+        WHERE ar.id = #{id}
+    </select>
+
+    <!-- 查询所有竞拍记录 -->
+    <select id="selectAll" resultMap="ResultMapWithAssociation">
+        SELECT
+        <include refid="Base_Column_List_With_Association"/>
+        FROM auctionRecord ar
+        LEFT JOIN auctionUser u ON ar.userId = u.userId
+        LEFT JOIN auction a ON ar.auctionId = a.auctionId
+        ORDER BY ar.auctionTime DESC
+    </select>
+
+    <!-- 根据拍卖品ID查询竞拍记录 -->
+    <select id="selectByAuctionId" resultMap="ResultMapWithAssociation" parameterType="java.lang.Long">
+        SELECT
+        <include refid="Base_Column_List_With_Association"/>
+        FROM auctionRecord ar
+        LEFT JOIN auctionUser u ON ar.userId = u.userId
+        LEFT JOIN auction a ON ar.auctionId = a.auctionId
+        WHERE ar.auctionId = #{auctionId}
+        ORDER BY ar.auctionPrice DESC, ar.auctionTime ASC
+    </select>
+
+    <!-- 根据用户ID查询竞拍记录 -->
+    <select id="selectByUserId" resultMap="ResultMapWithAssociation" parameterType="java.lang.Long">
+        SELECT
+        <include refid="Base_Column_List_With_Association"/>
+        FROM auctionRecord ar
+        LEFT JOIN auctionUser u ON ar.userId = u.userId
+        LEFT JOIN auction a ON ar.auctionId = a.auctionId
+        WHERE ar.userId = #{userId}
+        ORDER BY ar.auctionTime DESC
+    </select>
+
+    <!-- 查询拍卖品的最高竞价记录 -->
+    <select id="selectMaxPriceRecord" resultMap="ResultMapWithAssociation" parameterType="java.lang.Long">
+        SELECT
+        <include refid="Base_Column_List_With_Association"/>
+        FROM auctionRecord ar
+        LEFT JOIN auctionUser u ON ar.userId = u.userId
+        LEFT JOIN auction a ON ar.auctionId = a.auctionId
+        WHERE ar.auctionId = #{auctionId}
+        ORDER BY ar.auctionPrice DESC, ar.auctionTime ASC
+        LIMIT 1
+    </select>
+
+    <!-- 插入竞拍记录 -->
+    <insert id="insert" parameterType="cn.wameeee.entity.AuctionRecord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO auctionRecord (
+            userId, auctionId, auctionTime, auctionPrice
+        ) VALUES (
+            #{userId}, #{auctionId}, #{auctionTime}, #{auctionPrice}
+        )
+    </insert>
+
+    <!-- 更新竞拍记录 -->
+    <update id="update" parameterType="cn.wameeee.entity.AuctionRecord">
+        UPDATE auctionRecord
+        <set>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="auctionId != null">auctionId = #{auctionId},</if>
+            <if test="auctionTime != null">auctionTime = #{auctionTime},</if>
+            <if test="auctionPrice != null">auctionPrice = #{auctionPrice},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除竞拍记录 -->
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM auctionRecord WHERE id = #{id}
+    </delete>
+
+    <!-- 删除拍卖品的所有竞拍记录 -->
+    <delete id="deleteByAuctionId" parameterType="java.lang.Long">
+        DELETE FROM auctionRecord WHERE auctionId = #{auctionId}
+    </delete>
+</mapper> 

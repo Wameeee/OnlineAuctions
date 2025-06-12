@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wameeee.mapper.AuctionMapper">
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="cn.wameeee.entity.Auction">
+        <id column="auctionId" property="auctionId"/>
+        <result column="auctionName" property="auctionName"/>
+        <result column="auctionStartPrice" property="auctionStartPrice"/>
+        <result column="auctionUpset" property="auctionUpset"/>
+        <result column="auctionStartTime" property="auctionStartTime"/>
+        <result column="auctionEndTime" property="auctionEndTime"/>
+        <result column="auctionPic" property="auctionPic"/>
+        <result column="auctionPicType" property="auctionPicType"/>
+        <result column="auctionDesc" property="auctionDesc"/>
+    </resultMap>
+
+    <!-- 公共列 -->
+    <sql id="Base_Column_List">
+        auctionId, auctionName, auctionStartPrice, auctionUpset, auctionStartTime, auctionEndTime, auctionPic, auctionPicType, auctionDesc
+    </sql>
+
+    <!-- 根据ID查询拍卖品 -->
+    <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM auction
+        WHERE auctionId = #{auctionId}
+    </select>
+
+    <!-- 查询所有拍卖品 -->
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM auction
+        ORDER BY auctionEndTime DESC
+    </select>
+
+    <!-- 查询正在进行中的拍卖品 -->
+    <select id="selectOngoing" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM auction
+        WHERE NOW() BETWEEN auctionStartTime AND auctionEndTime
+        ORDER BY auctionEndTime ASC
+    </select>
+
+    <!-- 查询已结束的拍卖品 -->
+    <select id="selectFinished" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM auction
+        WHERE auctionEndTime &lt; NOW()
+        ORDER BY auctionEndTime DESC
+    </select>
+
+    <!-- 根据名称模糊查询拍卖品 -->
+    <select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM auction
+        WHERE auctionName LIKE CONCAT('%', #{auctionName}, '%')
+        ORDER BY auctionEndTime DESC
+    </select>
+
+    <!-- 插入拍卖品 -->
+    <insert id="insert" parameterType="cn.wameeee.entity.Auction" useGeneratedKeys="true" keyProperty="auctionId">
+        INSERT INTO auction (
+            auctionName, auctionStartPrice, auctionUpset, auctionStartTime, auctionEndTime, auctionPic, auctionPicType, auctionDesc
+        ) VALUES (
+            #{auctionName}, #{auctionStartPrice}, #{auctionUpset}, #{auctionStartTime}, #{auctionEndTime}, #{auctionPic}, #{auctionPicType}, #{auctionDesc}
+        )
+    </insert>
+
+    <!-- 更新拍卖品 -->
+    <update id="update" parameterType="cn.wameeee.entity.Auction">
+        UPDATE auction
+        <set>
+            <if test="auctionName != null">auctionName = #{auctionName},</if>
+            <if test="auctionStartPrice != null">auctionStartPrice = #{auctionStartPrice},</if>
+            <if test="auctionUpset != null">auctionUpset = #{auctionUpset},</if>
+            <if test="auctionStartTime != null">auctionStartTime = #{auctionStartTime},</if>
+            <if test="auctionEndTime != null">auctionEndTime = #{auctionEndTime},</if>
+            <if test="auctionPic != null">auctionPic = #{auctionPic},</if>
+            <if test="auctionPicType != null">auctionPicType = #{auctionPicType},</if>
+            <if test="auctionDesc != null">auctionDesc = #{auctionDesc},</if>
+        </set>
+        WHERE auctionId = #{auctionId}
+    </update>
+
+    <!-- 删除拍卖品 -->
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM auction WHERE auctionId = #{auctionId}
+    </delete>
+</mapper> 
