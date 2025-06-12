@@ -80,3 +80,340 @@ select,input,label,button,button{ vertical-align:middle}
 .page{padding:20px; text-align:center}
 .page a{margin:0 5px}
 .border-no{border-bottom:none}
+
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* 按钮样式 */
+.btn {
+    display: inline-block;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    text-decoration: none;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #0069d9;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-link {
+    background-color: transparent;
+    color: #007bff;
+    padding: 0;
+}
+
+/* 表单样式 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.form-group textarea {
+    height: 150px;
+}
+
+.form-actions {
+    margin-top: 20px;
+}
+
+/* 消息样式 */
+.error-message {
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+}
+
+.success-message {
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+}
+
+/* 头部样式 */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 30px;
+}
+
+.logo a {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.main-nav ul {
+    display: flex;
+    list-style: none;
+}
+
+.main-nav li {
+    margin-right: 20px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-info span {
+    margin-right: 10px;
+}
+
+.admin-badge {
+    background-color: #dc3545;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.user-actions {
+    display: flex;
+}
+
+.user-actions a {
+    margin-left: 15px;
+}
+
+/* 搜索框样式 */
+.search-box {
+    margin-bottom: 20px;
+}
+
+.search-box form {
+    display: flex;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    font-size: 16px;
+}
+
+.search-box button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+/* 筛选链接样式 */
+.filter-links {
+    margin-bottom: 20px;
+}
+
+/* 拍卖品列表样式 */
+.auction-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.auction-item {
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+.auction-item:hover {
+    transform: translateY(-5px);
+}
+
+.auction-image {
+    height: 200px;
+    overflow: hidden;
+}
+
+.auction-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.auction-info {
+    padding: 15px;
+}
+
+.auction-info h3 {
+    margin-bottom: 10px;
+}
+
+.auction-info p {
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.auction-info .btn {
+    margin-top: 10px;
+}
+
+/* 拍卖品详情页样式 */
+.auction-detail {
+    display: flex;
+    margin-bottom: 30px;
+}
+
+.auction-detail-image {
+    width: 40%;
+    margin-right: 30px;
+}
+
+.auction-detail-image img {
+    width: 100%;
+    border-radius: 4px;
+}
+
+.auction-detail-info {
+    width: 60%;
+}
+
+.auction-detail-info h2 {
+    margin-bottom: 15px;
+}
+
+.auction-detail-info p {
+    margin-bottom: 10px;
+}
+
+.auction-description {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+/* 竞拍记录样式 */
+.auction-records {
+    margin-top: 30px;
+}
+
+.record-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.record-table th,
+.record-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.record-table th {
+    background-color: #f5f5f5;
+}
+
+/* 竞拍表单样式 */
+.bid-form {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+/* 管理员操作样式 */
+.admin-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+/* 无数据提示样式 */
+.no-data {
+    text-align: center;
+    padding: 30px;
+    color: #777;
+}

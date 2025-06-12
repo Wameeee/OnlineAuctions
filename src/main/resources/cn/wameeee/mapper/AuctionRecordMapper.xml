@@ -112,6 +112,29 @@
         LIMIT 1
     </select>
 
+    <!-- 查询拍卖品的最高竞价记录（别名方法） -->
+    <select id="selectHighestRecord" resultMap="ResultMapWithAssociation" parameterType="java.lang.Long">
+        SELECT
+        <include refid="Base_Column_List_With_Association"/>
+        FROM auctionRecord ar
+        LEFT JOIN auctionUser u ON ar.userId = u.userId
+        LEFT JOIN auction a ON ar.auctionId = a.auctionId
+        WHERE ar.auctionId = #{auctionId}
+        ORDER BY ar.auctionPrice DESC, ar.auctionTime ASC
+        LIMIT 1
+    </select>
+
+    <!-- 查询拍卖品的所有竞拍记录并按价格降序排序 -->
+    <select id="selectSortedByPrice" resultMap="ResultMapWithAssociation" parameterType="java.lang.Long">
+        SELECT
+        <include refid="Base_Column_List_With_Association"/>
+        FROM auctionRecord ar
+        LEFT JOIN auctionUser u ON ar.userId = u.userId
+        LEFT JOIN auction a ON ar.auctionId = a.auctionId
+        WHERE ar.auctionId = #{auctionId}
+        ORDER BY ar.auctionPrice DESC, ar.auctionTime ASC
+    </select>
+
     <!-- 插入竞拍记录 -->
     <insert id="insert" parameterType="cn.wameeee.entity.AuctionRecord" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO auctionRecord (

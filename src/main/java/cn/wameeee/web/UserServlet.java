@@ -47,6 +47,12 @@ public class UserServlet extends HttpServlet {
             case "/list":
                 listUsers(req, resp);
                 break;
+            case "/reset-password":
+                showResetPasswordForm(req, resp);
+                break;
+            case "/reset-question":
+                showResetQuestionForm(req, resp);
+                break;
             default:
                 resp.sendRedirect(req.getContextPath() + "/user/login");
                 break;
@@ -75,6 +81,12 @@ public class UserServlet extends HttpServlet {
                 break;
             case "/admin":
                 adminLogin(req, resp);
+                break;
+            case "/reset-password":
+                resetPassword(req, resp);
+                break;
+            case "/reset-question":
+                verifySecurityQuestion(req, resp);
                 break;
             default:
                 resp.sendRedirect(req.getContextPath() + "/user/login");
@@ -311,5 +323,97 @@ public class UserServlet extends HttpServlet {
         List<AuctionUser> users = userService.getAllUsers();
         req.setAttribute("users", users);
         req.getRequestDispatcher("/userList.jsp").forward(req, resp);
+    }
+
+    /**
+     * 显示密码重置表单（第一步：输入用户名）
+     */
+    private void showResetPasswordForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getRequestDispatcher("/resetPassword.jsp").forward(req, resp);
+    }
+
+    /**
+     * 显示安全问题表单（第二步：回答安全问题）
+     */
+    private void showResetQuestionForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String userName = req.getParameter("userName");
+        if (userName == null || userName.isEmpty()) {
+            resp.sendRedirect(req.getContextPath() + "/user/reset-password");
+            return;
+        }
+
+        AuctionUser user = userService.getUserByName(userName);
+        if (user == null) {
+            req.setAttribute("errorMsg", "用户不存在");
+            req.getRequestDispatcher("/resetPassword.jsp").forward(req, resp);
+            return;
+        }
+
+        req.setAttribute("userName", userName);
+        req.setAttribute("userQuestion", user.getUserQuestion());
+        req.getRequestDispatcher("/resetQuestion.jsp").forward(req, resp);
+    }
+
+    /**
+     * 验证安全问题答案
+     */
+    private void verifySecurityQuestion(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String userName = req.getParameter("userName");
+        String answer = req.getParameter("userAnswer");
+        String newPassword = req.getParameter("newPassword");
+        String confirmPassword = req.getParameter("confirmPassword");
+
+        if (userName == null || userName.isEmpty() || answer == null || answer.isEmpty() ||
+                newPassword == null || newPassword.isEmpty() || confirmPassword == null || confirmPassword.isEmpty()) {
+            req.setAttribute("errorMsg", "所有字段都是必填的");
+            req.getRequestDispatcher("/resetQuestion.jsp").forward(req, resp);
+            return;
+        }
+
+        // 验证新密码是否一致
+        if (!newPassword.equals(confirmPassword)) {
+            req.setAttribute("errorMsg", "两次输入的密码不一致");
+            req.setAttribute("userName", userName);
+            req.getRequestDispatcher("/resetQuestion.jsp").forward(req, resp);
+            return;
+        }
+
+        // 验证安全问题答案
+        AuctionUser user = userService.getUserByName(userName);
+        if (user == null || !user.getUserAnswer().equals(answer)) {
+            req.setAttribute("errorMsg", "安全问题答案错误");
+            req.setAttribute("userName", userName);
+            req.setAttribute("userQuestion", user != null ? user.getUserQuestion() : "");
+            req.getRequestDispatcher("/resetQuestion.jsp").forward(req, resp);
+            return;
+        }
+
+        // 重置密码
+        user.setUserPassword(newPassword);
+        boolean success = userService.updateUser(user);
+        if (success) {
+            req.setAttribute("successMsg", "密码重置成功，请使用新密码登录");
+            req.getRequestDispatcher("/login.jsp").forward(req, resp);
+        } else {
+            req.setAttribute("errorMsg", "密码重置失败，请稍后再试");
+            req.setAttribute("userName", userName);
+            req.setAttribute("userQuestion", user.getUserQuestion());
+            req.getRequestDispatcher("/resetQuestion.jsp").forward(req, resp);
+        }
+    }
+
+    /**
+     * 重置密码
+     */
+    private void resetPassword(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String userName = req.getParameter("userName");
+        if (userName == null || userName.isEmpty()) {
+            req.setAttribute("errorMsg", "用户名不能为空");
+            req.getRequestDispatcher("/resetPassword.jsp").forward(req, resp);
+            return;
+        }
+
+        // 重定向到安全问题验证页面
+        resp.sendRedirect(req.getContextPath() + "/user/reset-question?userName=" + userName);
     }
 } 

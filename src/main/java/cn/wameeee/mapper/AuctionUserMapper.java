@@ -23,6 +23,13 @@ public interface AuctionUserMapper {
     AuctionUser selectByUserName(String userName);
     
     /**
+     * 根据用户名查询用户（别名方法）
+     * @param userName 用户名
+     * @return 用户对象
+     */
+    AuctionUser selectByName(String userName);
+    
+    /**
      * 查询所有用户
      * @return 用户列表
      */

@@ -43,6 +43,20 @@ public interface AuctionRecordMapper {
     AuctionRecord selectMaxPriceRecord(Long auctionId);
     
     /**
+     * 查询拍卖品的最高竞价记录
+     * @param auctionId 拍卖品ID
+     * @return 竞拍记录对象
+     */
+    AuctionRecord selectHighestRecord(Long auctionId);
+    
+    /**
+     * 查询拍卖品的所有竞拍记录并按价格降序排序
+     * @param auctionId 拍卖品ID
+     * @return 竞拍记录列表
+     */
+    List<AuctionRecord> selectSortedByPrice(Long auctionId);
+    
+    /**
      * 插入竞拍记录
      * @param record 竞拍记录对象
      * @return 影响的行数

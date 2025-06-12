@@ -38,6 +38,14 @@
         WHERE userName = #{userName}
     </select>
 
+    <!-- 根据用户名查询用户（别名方法） -->
+    <select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM auctionUser
+        WHERE userName = #{userName}
+    </select>
+
     <!-- 查询所有用户 -->
     <select id="selectAll" resultMap="BaseResultMap">
         SELECT

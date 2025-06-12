@@ -42,7 +42,7 @@ drop table if exists `auctionUser`;
 create table `auctionUser` (
    `userId`             bigint(11)      not null    AUTO_INCREMENT    comment '用户编号',
    `userName`           varchar(40)     unique      not null    comment '用户名',
-   `userPassword`       varchar(20)     not null    comment '用户密码',
+   `userPassword`       varchar(100)     not null    comment '用户密码',
    `userCardNo`         varchar(20)     comment '用户身份证号',
    `userTel`            varchar(20)     comment '用户电话',
    `userAddress`        varchar(400)    comment '用户地址',
