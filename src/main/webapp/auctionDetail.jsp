@@ -81,7 +81,7 @@
                     <tbody>
                         <c:forEach items="${records}" var="record">
                             <tr>
-                                <td>${record.userId}</td>
+                                <td>${record.auctionUser.userName}</td>
                                 <td>￥<fmt:formatNumber value="${record.auctionPrice}" pattern="#,##0.00"/></td>
                                 <td><fmt:formatDate value="${record.auctionTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                             </tr>
