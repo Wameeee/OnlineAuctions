@@ -32,7 +32,13 @@ public class AuctionServlet extends HttpServlet {
 
     private AuctionService auctionService = new AuctionServiceImpl();
     private AuctionRecordService recordService = new AuctionRecordServiceImpl();
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+    private SimpleDateFormat[] additionalDateFormats = new SimpleDateFormat[] {
+        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"),
+        new SimpleDateFormat("yyyy-MM-dd HH:mm"),
+        new SimpleDateFormat("yyyy/MM/dd HH:mm"),
+        new SimpleDateFormat("yyyy/MM/dd'T'HH:mm")
+    };
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -59,6 +65,12 @@ public class AuctionServlet extends HttpServlet {
                 break;
             case "/search":
                 searchAuctions(req, resp);
+                break;
+            case "/update":
+                showUpdateAuctionForm(req, resp);
+                break;
+            case "/delete":
+                deleteAuction(req, resp);
                 break;
             default:
                 resp.sendRedirect(req.getContextPath() + "/auction/list");
@@ -188,8 +200,11 @@ public class AuctionServlet extends HttpServlet {
             String auctionName = req.getParameter("auctionName");
             BigDecimal startPrice = new BigDecimal(req.getParameter("auctionStartPrice"));
             BigDecimal upsetPrice = new BigDecimal(req.getParameter("auctionUpset"));
-            Date startTime = dateFormat.parse(req.getParameter("auctionStartTime"));
-            Date endTime = dateFormat.parse(req.getParameter("auctionEndTime"));
+            
+            // 使用辅助方法解析日期
+            Date startTime = parseDate(req.getParameter("auctionStartTime"));
+            Date endTime = parseDate(req.getParameter("auctionEndTime"));
+            
             String auctionDesc = req.getParameter("auctionDesc");
 
             // 处理图片上传
@@ -247,8 +262,11 @@ public class AuctionServlet extends HttpServlet {
             String auctionName = req.getParameter("auctionName");
             BigDecimal startPrice = new BigDecimal(req.getParameter("auctionStartPrice"));
             BigDecimal upsetPrice = new BigDecimal(req.getParameter("auctionUpset"));
-            Date startTime = dateFormat.parse(req.getParameter("auctionStartTime"));
-            Date endTime = dateFormat.parse(req.getParameter("auctionEndTime"));
+            
+            // 使用辅助方法解析日期
+            Date startTime = parseDate(req.getParameter("auctionStartTime"));
+            Date endTime = parseDate(req.getParameter("auctionEndTime"));
+            
             String auctionDesc = req.getParameter("auctionDesc");
 
             // 获取原拍卖品信息
@@ -386,6 +404,63 @@ public class AuctionServlet extends HttpServlet {
             return fileName.substring(fileName.lastIndexOf(".") + 1);
         } else {
             return "";
+        }
+    }
+
+    /**
+     * 解析多种格式的日期字符串
+     */
+    private Date parseDate(String dateStr) throws ParseException {
+        if (dateStr == null || dateStr.trim().isEmpty()) {
+            throw new ParseException("日期字符串为空", 0);
+        }
+        
+        // 首先尝试使用主要格式
+        try {
+            return dateFormat.parse(dateStr);
+        } catch (ParseException e) {
+            // 尝试其他格式
+            for (SimpleDateFormat format : additionalDateFormats) {
+                try {
+                    return format.parse(dateStr);
+                } catch (ParseException ex) {
+                    // 继续尝试下一个格式
+                }
+            }
+            // 所有格式都失败了，抛出异常
+            throw new ParseException("无法解析日期: " + dateStr, 0);
+        }
+    }
+
+    /**
+     * 显示更新拍卖品表单
+     */
+    private void showUpdateAuctionForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // 检查用户是否是管理员
+        AuctionUser user = (AuctionUser) req.getSession().getAttribute("user");
+        if (user == null || !user.getUserIsAdmin()) {
+            resp.sendRedirect(req.getContextPath() + "/login.jsp");
+            return;
+        }
+        
+        String auctionIdStr = req.getParameter("id");
+        if (auctionIdStr == null || auctionIdStr.isEmpty()) {
+            resp.sendRedirect(req.getContextPath() + "/auction/list");
+            return;
+        }
+        
+        try {
+            Long auctionId = Long.parseLong(auctionIdStr);
+            Auction auction = auctionService.getAuctionById(auctionId);
+            if (auction == null) {
+                resp.sendRedirect(req.getContextPath() + "/auction/list");
+                return;
+            }
+            
+            req.setAttribute("auction", auction);
+            req.getRequestDispatcher("/addAuction.jsp").forward(req, resp);
+        } catch (NumberFormatException e) {
+            resp.sendRedirect(req.getContextPath() + "/auction/list");
         }
     }
 } 
